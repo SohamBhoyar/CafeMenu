@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gold Rush Café | Menu</title>
+  <style>
+    :root {
+      --primary: #d99123;
+      --secondary: #ff6600;
+      --dark: #3e2c1c;
+      --light: #fff8e7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: var(--light);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      font-family: 'Brush Script MT', cursive;
+    }
+
+    .slogan {
+      font-size: 1rem;
+      color: var(--light);
+    }
+
+    .main-category-bar {
+        position: fixed;
+        background: var(--light);
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 20px;
+    }
+
+    .main-category-bar button {
+      padding: 8px 15px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .main-category-bar button.active {
+      background: var(--primary);
+    }
+
+    .filter-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .filter-menu {
+      position: fixed;
+      bottom: 160px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 1000;
+    }
+
+    .filter-menu.active {
+      display: block;
+    }
+
+    .filter-menu button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .filter-menu button:hover,
+    .filter-menu button.active {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+    }
+
+    main {
+      padding: 20px;
+      padding-bottom: 100px;
+      padding-top: 200px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .menu-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .menu-grid.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* force 2 columns always */
+  gap: 20px;
+}
+
+@media (max-width: 480px) {
+  .menu-grid.two-col {
+    grid-template-columns: repeat(2, 1fr); /* keep 2 columns even on mobile */
+  }
+
+  .menu-grid.one-col {
+    grid-template-columns: 1fr; /* combo in single column */
+  }
+}
+
+
+    .menu-item {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .menu-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .item-details {
+      padding: 15px;
+    }
+
+    .item-details h3 {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .item-details p {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .item-price {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .price {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .add-btn {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Gold Rush Café</h1>
+    <div class="slogan">Fast Food • Fresh Sips • Sweet Cravings</div>
+  </header>
+
+  <!-- Main Category Buttons -->
+  <div class="main-category-bar" id="mainCategoryBar"></div>
+
+  <!-- Filter Floating Button -->
+  <button class="filter-btn" id="filterBtn">☰</button>
+
+  <!-- Subcategory Filter Menu -->
+  <div class="filter-menu" id="filterMenu"></div>
+
+  <main>
+    <div id="menuContainer" class="menu-grid"></div>
+  </main>
+
+  <footer>
+    © 2025 Gold Rush Café | Designed by Nana
+  </footer>
+<script>
+  const menuItems = [
+    // NON-VEG MENU
+    { name: "Chicken Nuggets", category: "NonVeg Menu", subcategory: "NonVeg Starters", price: 119, image: "https://www.allrecipes.com/thmb/Dw_WFOvCds43ksPxkrE60qxcwSk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-8849-HomemadeChickenNuggets-beauty-4x3-ca915ee936054272af1b506181923c7f.jpg" },
+    { name: "Chicken Cheese Balls", category: "NonVeg Menu", subcategory: "NonVeg Starters", price: 129, image: "https://i.ytimg.com/vi/VbWgSayA_1U/sddefault.jpg" },
+    { name: "KFC Style Fried Chicken", category: "NonVeg Menu", subcategory: "NonVeg Starters", price: 159, image: "https://i.pinimg.com/736x/9c/23/4a/9c234a0f3e9c95efbcd63e35232a22ae.jpg" },
+
+    { name: "Classic Chicken Burger", category: "NonVeg Menu", subcategory: "Chicken Burgers", price: 119, image: "https://media.istockphoto.com/id/521207406/photo/southern-country-fried-chicken-sandwich.jpg?s=612x612&w=0&k=20&c=XfttLSxEO2YAjop4Gy0CIb1L5N_OK1tTKxmkiPr3QD8=" },
+    { name: "Tandoori Chicken Burger", category: "NonVeg Menu", subcategory: "Chicken Burgers", price: 129, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlHpr6wbeBnmiuMG0S0_Ay6gdhTFFg3VVC1A&s" },
+    { name: "Spicy Chicken Burger", category: "NonVeg Menu", subcategory: "Chicken Burgers", price: 139, image: "https://media.istockphoto.com/id/521207406/photo/southern-country-fried-chicken-sandwich.jpg?s=612x612&w=0&k=20&c=XfttLSxEO2YAjop4Gy0CIb1L5N_OK1tTKxmkiPr3QD8=" },
+
+    { name: "Classic Chicken Momos", category: "NonVeg Menu", subcategory: "Chicken Fried Momos", price: 99, image: "https://www.shutterstock.com/image-photo/top-view-ten-fried-chicken-600nw-2429890705.jpg" },
+    { name: "Chicken Tikka Momos", category: "NonVeg Menu", subcategory: "Chicken Fried Momos", price: 109, image: "https://poonjiaji.com/cdn/shop/articles/Poonjiaji_Blog_2.jpg?v=1729681145" },
+    { name: "Chicken Schezwan Momos", category: "NonVeg Menu", subcategory: "Chicken Fried Momos", price: 119, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR10NEJ5mfITKy9zd0MKzU7t08PfvkUoXXJvA&s" },
+
+    // VEG MENU
+    { name: "Cheese Chilli Burst", category: "Veg Menu", subcategory: "Veg Starters", price: 99, image: "https://source.unsplash.com/300x200/?cheese-burst" },
+    { name: "Chilli Garlic Potato Pops", category: "Veg Menu", subcategory: "Veg Starters", price: 89, image: "https://source.unsplash.com/300x200/?potato-pops" },
+    { name: "Cheese Corn Nuggets", category: "Veg Menu", subcategory: "Veg Starters", price: 99, image: "https://source.unsplash.com/300x200/?corn-nuggets" },
+    { name: "Crispy Onion Rings", category: "Veg Menu", subcategory: "Veg Starters", price: 79, image: "https://source.unsplash.com/300x200/?onion-rings" },
+
+    { name: "Fried Veg Momos", category: "Veg Menu", subcategory: "Fried Veg Momos", price: 89, image: "https://source.unsplash.com/300x200/?veg-momo" },
+    { name: "French Fries", category: "Veg Menu", subcategory: "French Fries", price: 79, image: "https://source.unsplash.com/300x200/?french-fries" },
+    { name: "Cheese Toast", category: "Veg Menu", subcategory: "Toast", price: 69, image: "https://source.unsplash.com/300x200/?cheese-toast" },
+
+    // VEG COMBO
+    { name: "Veg Combo 1", category: "Veg Combo", subcategory: "", price: 199, image: "https://source.unsplash.com/300x200/?veg-combo" },
+    { name: "Veg Combo 2", category: "Veg Combo", subcategory: "", price: 229, image: "https://source.unsplash.com/300x200/?veg-thali" },
+
+    // NON-VEG COMBO
+    { name: "NonVeg Combo 1", category: "NonVeg Combo", subcategory: "", price: 249, image: "https://source.unsplash.com/300x200/?chicken-thali" },
+    { name: "NonVeg Combo 2", category: "NonVeg Combo", subcategory: "", price: 269, image: "https://source.unsplash.com/300x200/?nonveg-combo" },
+
+    // BEVERAGES
+    { name: "Hot Coffee", category: "Beverages Menu", subcategory: "Exclusively Hot", price: 39, image: "https://source.unsplash.com/300x200/?hot-coffee" },
+    { name: "Black Coffee", category: "Beverages Menu", subcategory: "Exclusively Hot", price: 39, image: "https://source.unsplash.com/300x200/?black-coffee" },
+    { name: "Cold Coffee", category: "Beverages Menu", subcategory: "Exclusively Cold", price: 49, image: "https://source.unsplash.com/300x200/?cold-coffee" },
+    { name: "Oreo Milkshake", category: "Beverages Menu", subcategory: "Signature Milkshakes", price: 89, image: "https://source.unsplash.com/300x200/?oreo-shake" }
+  ];
+
+  const mainCategoryBar = document.getElementById('mainCategoryBar');
+  const filterMenu = document.getElementById('filterMenu');
+  const filterBtn = document.getElementById('filterBtn');
+  const menuContainer = document.getElementById('menuContainer');
+
+  const mainCategories = [...new Set(menuItems.map(i => i.category))];
+  let currentMainCategory = mainCategories[0];
+  let currentSubcategory = null;
+
+  function renderMainCategories() {
+    mainCategoryBar.innerHTML = '';
+    mainCategories.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.textContent = cat;
+      btn.classList.toggle('active', cat === currentMainCategory);
+      btn.onclick = () => {
+        currentMainCategory = cat;
+        currentSubcategory = null;
+        renderMainCategories();
+        renderSubcategories();
+        renderMenu();
+      };
+      mainCategoryBar.appendChild(btn);
+    });
+  }
+
+  function renderSubcategories() {
+    filterMenu.innerHTML = '';
+    const subcats = [...new Set(menuItems.filter(i => i.category === currentMainCategory && i.subcategory).map(i => i.subcategory))];
+    subcats.forEach(sub => {
+      const btn = document.createElement('button');
+      btn.textContent = sub;
+      btn.classList.toggle('active', sub === currentSubcategory);
+      btn.onclick = () => {
+        currentSubcategory = sub;
+        renderSubcategories();
+        renderMenu();
+      };
+      filterMenu.appendChild(btn);
+    });
+
+    // Hide filter if no subcategories
+    filterBtn.style.display = subcats.length ? 'block' : 'none';
+  }
+
+  function renderMenu() {
+    const filtered = menuItems.filter(i =>
+      i.category === currentMainCategory &&
+      (!currentSubcategory || i.subcategory === currentSubcategory)
+    );
+
+    menuContainer.className = 'menu-grid';
+    menuContainer.classList.add(currentMainCategory.includes('Combo') ? 'one-col' : 'two-col');
+    menuContainer.innerHTML = '';
+
+    filtered.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'menu-item';
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <div class="item-details">
+          <h3>${item.name}</h3>
+          <p>${item.subcategory || item.category}</p>
+          <div class="item-price">
+            <span class="price">₹${item.price}</span>
+            <button class="add-btn">+ Add</button>
+          </div>
+        </div>
+      `;
+      menuContainer.appendChild(div);
+    });
+  }
+
+  // Floating filter toggle
+  filterBtn.onclick = () => {
+    filterMenu.classList.toggle('active');
+  };
+
+  renderMainCategories();
+  renderSubcategories();
+  renderMenu();
+</script>
+</body>
+</html>
